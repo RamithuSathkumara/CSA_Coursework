@@ -42,3 +42,102 @@ The API adheres to industry-standard architectural patterns to ensure it is both
 2. Unzip the folder.
 3. Open NetBeans and go to File > open project and navigate to the directory where you have unzipped the project. Click on the project folder and press "Open Project" button.
 4. After the project has been added to the NetBeans, open the left sidebar. Right click on the project's root and click the "Run" button. 
+
+## Curl commands
+
+1) View api metadata
+```curl -s http://localhost:8080/CourseWork/api/v1 | jq```
+
+2) View list of rooms
+```curl -s http://localhost:8080/CourseWork/api/v1/rooms | jq```
+
+3) Create a new room
+```
+curl -s -X POST http://localhost:8080/CourseWork/api/v1/rooms \
+     -H "Content-Type: application/json" \
+     -d '{
+        "id": "LAB-100",
+        "name": "Laboratory",
+        "capacity": 40
+     }' | jq
+```
+
+4) Get information of a specific room
+```
+curl -s -X GET http://localhost:8080/CourseWork/api/v1/rooms/LIB-301 \
+     -H "Accept: application/json" | jq
+```
+
+5) Delete a room
+`curl -i -X DELETE http://localhost:8080/CourseWork/api/v1/rooms/LAB-100`
+
+6) Post a new sensor
+```
+curl -s -X POST http://localhost:8080/CourseWork/api/v1/sensors \
+     -H "Content-Type: application/json" \
+     -d '{
+        "id": "TEMP-300",
+        "type": "Temperature",
+        "status": "MAINTENANCE",
+        "roomId": "LIB-301"
+     }' | jq
+```
+
+7) Get the list of all the sensors  ```
+```
+curl -s -X GET http://localhost:8080/CourseWork/api/v1/sensors \
+     -H "Accept: application/json" | jq
+```
+
+8) Get the list of sensors of a specific type
+```
+curl -G -s http://localhost:8080/CourseWork/api/v1/sensors \
+     -d "type=CO2" \
+     -H "Accept: application/json" | jq
+```
+
+9) Get sensor readings of a specific sensor
+```
+curl -s -X GET http://localhost:8080/CourseWork/api/v1/sensors/TEMP-101/readings \
+     -H "Accept: application/json" | jq
+```
+
+10) Post a new sensor reading
+```
+curl -s -X POST http://localhost:8080/CourseWork/api/v1/sensors/TEMP-101/readings \
+     -H "Content-Type: application/json" \
+     -d '{
+        "value": 25.5
+     }' | jq
+```
+
+11) Attempting to delete a Room that still has Sensors assigned to it
+```
+curl -i -X DELETE http://localhost:8080/CourseWork/api/v1/rooms/LIB-301
+```
+
+12) Attempting to POST a new Sensor with a roomld that does not exist
+```
+curl -i -X POST http://localhost:8080/CourseWork/api/v1/sensors \
+     -H "Content-Type: application/json" \
+     -d '{
+        "id": "TEMP-300",
+        "type": "Temperature",
+        "status": "ACTIVE",
+        "roomId": "LAB-701"
+     }'
+```
+
+13) Attempting to add a new sensor reading to a sensor under maintenance
+```
+curl -i -X POST http://localhost:8080/CourseWork/api/v1/sensors/TEMP-300/readings \
+     -H "Content-Type: application/json" \
+     -d '{
+        "value": 26
+     }'
+```
+
+14) Testing unexpected runtime errors
+```
+curl -i -X GET http://localhost:8080/CourseWork/api/v1/roomss
+```
